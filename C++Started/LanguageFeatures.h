@@ -15,8 +15,10 @@ class LanguageFeatures
 public:
 	void test()
 	{
+		/*calloc：指定变量个数，每个变量的大小，初始化已分配的内存为0
+		malloc:不初始化分配的内存，已分配的内存中可以是任意的值*/
 		void *x = calloc(1, sizeof x);
-		x:(((struct x *)x)->x1) = x(5);
+		(((struct x *)x)->x1) = x(5);
 		printf("%p\n", ((struct x *)x)->x1);
 		free(x);
 		printf("%p\n", x);

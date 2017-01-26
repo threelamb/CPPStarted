@@ -10,15 +10,16 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    C_Plus_Plus_Basic::a();
-	C_Plus_Plus_Basic::b();
-	C_Plus_Plus_Basic::c();
+	/*C_Plus_Plus_Basic::Class_Funtion();
+	C_Plus_Plus_Basic::Type();
+	C_Plus_Plus_Basic::Operator();*/
+	//C_Plus_Plus_Basic::NewAndPoint();
 
-	/*MyAlgorithm	alg;
-	alg.a();*/
+	MyAlgorithm	alg;
+	alg.a();
 
-	//LanguageFeatures lf;
-	//lf.test();
+	/*LanguageFeatures lf;
+	lf.test();*/
 
 	//BP B;//生成一个BP类对象B
 	//B.Train();//开始训练

@@ -25,6 +25,11 @@ namespace C_Plus_Plus_Basic
 		cout << "char ch = '@';" << endl << "void *p = &ch;" << endl;
 		cout << space << "p=" << p << endl;
 		//cout<<"*p="<<*p<<endl; /* illegal indirection. */
+		/*
+		将无类型指针转化成具体的类型指针，就可以从内存中取值了；
+		你可以将无类型指针转化成任意类型，只是取出来的值不可控而已;
+		"*"操作符只能对指针操作
+		*/
 		cout << space << "*((char*)p)=" << *((char*)p) << endl;
 		void *q;
 		cout << "void *q;" << endl;
@@ -41,12 +46,13 @@ namespace C_Plus_Plus_Basic
 		cout << endl;
 	}
 
+	/*指向指针的指针，指针的数组*/
 	void testPointerToPointer_ArrayOfPointers()
 	{
 		// Array of pointer.
-		char *arA[] = { "C++", "C#", "OpenGL", "WindowsAPI", "3D" };
+		char* arA[] = { "C++", "C#", "OpenGL", "WindowsAPI", "3D" };
 		// Pointer pointer.
-		char **p = arA;
+		char** p = arA;
 		int i = -1;
 		while (++i < 5)
 			cout << space << "i=" << i << space << "**(arA+i)=" << **(arA + i) << endl;
@@ -56,13 +62,14 @@ namespace C_Plus_Plus_Basic
 		cout << endl;
 	}
 
+	/*指向数组的指针，指针的数组*/
 	void testPointerToArray_ArrayOfPointers()
 	{
 		int i, j;
 		int m[3][4] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 		cout << "int m[3][4] = {0,1,2,3,4,5,6,7,8,9,10,11};";
-		int(*p)[4];
-		int *q[3];
+		int(*p)[4]; //指向数组的指针
+		int* q[3]; //指针的数组
 
 		p = m;
 		cout << "int (*p)[1] = m" << endl;
@@ -150,14 +157,18 @@ namespace C_Plus_Plus_Basic
 		}
 	}
 
-	int* max(int *p, int size)
+	int* max(int* ary, int num)
 	{
-		int *max = p;
-		for (int i = 0; i<size; ++i)
+		int* max = ary;
+		int i = -1;
+		while (++i < num)
 		{
-			if (*(p + i)>*max)
-				max = p + i;
+			if (*max < *(ary + i))
+			{
+				max = ary + i;
+			}
 		}
+
 		return max;
 	}
 
@@ -195,21 +206,21 @@ namespace C_Plus_Plus_Basic
 
 		for (int i = 0; i < size; ++i)
 		{
-			char *c = new char[2];
+			char *c = new char[2]; //每次循环C地址不变，C指向的地址会变。
 			char *temp = new char[2];
 			sprintf(temp, "%d", i);
 			cout << space << "&temp=" << &temp << space << "temp=" << temp << endl;
 			sprintf(c, "%d", i);
 			cout << space << "*c=" << *c << endl;
-			delete[] c;
+			delete[] c; //如果删除C,每次循环C地址不变，C指向的地址也不会变，猜测是内容管理器重复利用空间。
 		}
 		cout << endl;
 	}
 
 	void testPointerPlusPlus()
 	{
-		int a[4][5];
-		int(*b)[5];
+		int a[4][5]; //C/C++中只有二维数组，没有交叉数组。
+		int(*b)[5];  //可以用数组指针来操作二维数组。
 		b = a;
 		int i, j;
 		int value = 0;
@@ -257,9 +268,9 @@ namespace C_Plus_Plus_Basic
 	}
 
 	char* getStr1(void)
-	{
-		char p[] = "happy life!";
-		char *pP = p;
+	{//指针和数组是等价的，指针的移动操作和数组的下标操作是等价的。
+		char p[] = "happy life!"; //数组名是数组的首地址指针。
+		char *pP = p; //pP指向数组名的指针，也就是指针的指针。
 		return pP;
 	}
 
@@ -271,8 +282,8 @@ namespace C_Plus_Plus_Basic
 
 	void testStackArea_StaticDataAreaInLifeCycleOfFunctions()
 	{
-		char *p1 = getStr1();
-		char *p2 = getStr2();
+		char *p1 = getStr1();//指针的指针作为返回值，来到外层作用域时，其指向的内容就会被释放。
+		char *p2 = getStr2();//指针作为返回值，来到外层作用域时，其指向的内容会保持。
 		cout << "printf(\"p1=%x, p2=%x\")" << endl;
 		printf("%cp1=%x, p2=%x\n", space, p1, p2);
 		cout << "printf(\"p1=%s, p2=%s\")" << endl;
@@ -293,7 +304,7 @@ namespace C_Plus_Plus_Basic
 		for (int i = 0; i < n; ++i)
 		{
 			int maxValue = 0;
-			for (int j = 0; j<m; ++j)
+			for (int j = 0; j < m; ++j)
 			{
 				if (arA[j][i] > maxValue)
 					maxValue = arA[j][i];
@@ -307,17 +318,18 @@ namespace C_Plus_Plus_Basic
 		cout << space << "i=" << i << endl;
 		int lessThanAverage = 0, moreThanAverage = 0;
 		while (++i < m*n)
-		if (*(*arA + i) < sum / n)
-			lessThanAverage++;
-		else
-			moreThanAverage++;
+			if (*(*arA + i) < sum / n)
+				lessThanAverage++;
+			else
+				moreThanAverage++;
 		cout << space << "lessThanAverage=" << lessThanAverage << space << "moreThanAverage=" << moreThanAverage << endl;
 
 		cout << endl;
 	}
 
-	enum day{ sunday, monday, tuesday, wednesday, thursday, friday, saturday };
+	enum day { sunday, monday, tuesday, wednesday, thursday, friday, saturday };
 
+	//枚举是值类型，默认为值传递；所以此处形参定义为引用以达到操作原变量的目的。
 	void nextDay(day &D)
 	{
 		switch (D)
@@ -347,6 +359,7 @@ namespace C_Plus_Plus_Basic
 
 	}
 
+	//C/C++方法参数是值传递
 	void displayDay(day D)
 	{
 		switch (D)
@@ -377,7 +390,6 @@ namespace C_Plus_Plus_Basic
 
 	void testEnum()
 	{
-
 		day today = sunday;
 		for (int i = 0; i < 7; ++i)
 		{
@@ -404,6 +416,11 @@ namespace C_Plus_Plus_Basic
 		if (j > k)change(j, k);
 	}
 
+	/*以前的C语言中函数参数传递是值传递，
+	如果有大块数据作为参数传递的时候，采用的方案往往是指针，
+	因为 这样可以避免将整块数据全部压栈，可以提高程序的效率
+	（C++中）又增加了一种同样有效率的选择（在某些特殊情况下又是必须的选择），就是引 用。
+	*/
 	void testArgument()
 	{
 		int a = 10, b = 9, c = 8;
@@ -420,17 +437,17 @@ namespace C_Plus_Plus_Basic
 	{
 		int i = -1;
 		if (arALength < arBLength)
-		while (++i < arALength)
-		{
-			*(arA + i) = *(arB + i);
-		}
+			while (++i < arALength)
+			{
+				*(arA + i) = *(arB + i);
+			}
 		else
 		{
 			int i = -1;
 			while (++i < arALength)
 			{
 				if (i < arBLength)
-					*(arA + i) = *(arB + i);
+					*(arA + i) = *(arB + i); //通过指针赋值：1.取内容，2.赋值
 				else
 					*(arA + i) = space;
 			}
@@ -450,7 +467,7 @@ namespace C_Plus_Plus_Basic
 			int age;
 			char department[departmentLength];
 		};
-		student s1, s2;
+		student s1, s2; //结构/类 的 声明式：只会分配内存，不会初始化字段值。
 		s1.id = 1;
 		setValue(s1.name, nameLength, "eric", 5);
 		s1.age = 18;
@@ -468,7 +485,7 @@ namespace C_Plus_Plus_Basic
 		cout << space << "s2.age=" << s2.age << endl;
 		cout << space << "s2.department=" << s2.department << endl;
 		cout << "s1 = s2;" << endl;;
-		s1 = s2;
+		s1 = s2; //结构 的 赋值：结构地址，字段地址都不变，内容改变。
 		cout << space << "s1.id=" << s1.id << endl;
 		cout << space << "s1.name=" << s1.name << endl;
 		cout << space << "s1.age=" << s1.age << endl;
@@ -477,11 +494,13 @@ namespace C_Plus_Plus_Basic
 		cout << endl;
 	}
 
+	//引用传递，传递的是整个数组
 	void showLengthUseArrayReference(char(&arA)[20])
 	{
 		cout << space << sizeof(arA) << endl;
 	}
 
+	//值传递，传递的是数组的首字符
 	void showLength(char arA[20])
 	{
 		cout << space << sizeof(arA) << endl;
@@ -491,8 +510,8 @@ namespace C_Plus_Plus_Basic
 	{
 		char arA[20] = { 0, 1, 2, 3, 4, 5 };
 		cout << space << sizeof(arA) << endl;
-		showLengthUseArrayReference(arA);
-		showLength(arA);
+		showLengthUseArrayReference(arA); //引用传递，传递的是整个数组
+		showLength(arA);//值传递，传递的是数组的首字符
 
 		cout << endl;
 	}
@@ -520,7 +539,7 @@ namespace C_Plus_Plus_Basic
 	void testStructAndFunction()
 	{
 		student initialStruct();
-		student s1 = { 1, "eric", 18, "ComputerScience" };
+		student s1 = { 1, "eric", 18, "ComputerScience" }; //初始化 结构/类 的一种方式
 		cout << "student s1 = {1,\"eric\",18,\"ComputerScience\"};" << endl;
 		cout << space << "&s1.name=" << &s1.name << endl;
 		cout << "display(s1);" << endl;
@@ -562,7 +581,8 @@ namespace C_Plus_Plus_Basic
 
 	node* createLinkList(int count)
 	{
-		node *pHead = new node();
+		node temp; //这种方式，只分配内容
+		node *pHead = new node(); //这种方式，分配内存+初始化字段值，指针为0
 		node *pEnd;
 		node *pNow;
 		int j = -1;
@@ -598,6 +618,11 @@ namespace C_Plus_Plus_Basic
 			cout << space << "data=" << pNext->data << space << "next=" << pNext->next << endl;
 			pNext = pNext->next;
 		} while (pNext != NULL);
+	}
+
+	void showLinkList(node pHead)
+	{
+
 	}
 
 	node* searchNode(node *pHead, int keyWord)
@@ -647,6 +672,7 @@ namespace C_Plus_Plus_Basic
 				p = pHead->next;
 				pHead->next = p->next;
 				delete p;
+				p = NULL;
 				return true;
 			}
 			pHead = pHead->next;
@@ -666,10 +692,31 @@ namespace C_Plus_Plus_Basic
 		return 1;
 	}
 
+	class MyClass
+	{
+		int data;
+		node node;
+		MyClass *next;
+	};
+
+	//结构/类 按照值传递：首地址会变，值类型字段地址会变，指针类型字段地址也会变，但是指针类型指向的对象不会变。
+	void showMyClass(MyClass para)
+	{
+
+	}
+
+	void testClass()
+	{
+		MyClass* my = new MyClass();
+		showMyClass(*my);
+	}
+
 	void testLinkList()
 	{
+		MyClass my;
 		cout << "node pHead = createLinkList(20);" << endl;
 		node *pHead = createLinkList(20);
+		node tempNode;
 		cout << "pHead that receive return value" << endl;
 		cout << space << "&pHead=" << &pHead << space << "pHead=" << pHead << endl;
 		void showLinkList(node*);
@@ -698,6 +745,7 @@ namespace C_Plus_Plus_Basic
 	class Base
 	{
 	public:
+		int n = 10;
 		void func()
 		{
 			cout << space << "Base::void func()" << endl;
@@ -708,13 +756,35 @@ namespace C_Plus_Plus_Basic
 		}
 		void func(char c)
 		{
-			cout << space << "Base::int func(char c)=" << c << endl;
+			cout << space << "Base::void func(char c)=" << c << endl;
+		}
+	protected:
+		int n_Protected = 11;
+		void func(bool b)
+		{
+			cout << space << "Base::void func(bool b)=" << b << endl;
+		}
+	private:
+		int n_Private = 12;
+		void func_Private(int n)
+		{
+			cout << space << "Base::void func(int n)=" << n << endl;
 		}
 	};
 
 	class Derive :Base
 	{
 	public:
+		/*
+		成员函数func 和 字段n 在 Base 中为 public，但在 Derived 中为 private。
+		为了使func和字段n在 Derived 中成为 public，可以在 Derived 的 public部分增加一个 using 声明。
+		*/
+		using Base::n;
+		/*一个 using 声明只能指定一个名字，不能指定形参表，
+		使用using声明将名字加入作用域之后，派生类只需要重定义本类型确实必须定义的那些函数，
+		对其他版本可以使用继承的定义。
+		对于Derive来说，public的方法包括:base中的func(char c),
+		Derive中的func()和func(int m)*/
 		using Base::func;
 		void func()
 		{
@@ -726,6 +796,23 @@ namespace C_Plus_Plus_Basic
 		}
 	};
 
+	/*
+	继承时，指定基类的修饰符：可以为public,protected,private.
+	公共继承：子类只能访问基类中的Public和Protected字段/方法，不能访问Private字段/方法。
+	*/
+	class Devive2 : public Base
+	{
+	public:
+		void func2()
+		{
+			n_Protected = 30;
+			//n_Private = 40; //不可访问
+			//func_Private(1)//不可访问
+		}
+	};
+
+	/*继承体系：基类中的字段和方法在子类中是private的。
+	如果想改变访问限制可以在子类的修饰符后面使用Using 基类名::字段/方法名。*/
 	void testDerive_Using()
 	{
 		cout << "Base b;" << endl;
@@ -736,11 +823,18 @@ namespace C_Plus_Plus_Basic
 		b.func();
 		cout << "b.func(1);" << endl;
 		b.func(1);
+		cout << "b.func('char')" << endl;
+		b.func('c');
 		cout << "d.func();" << endl;
 		d.func();
 		cout << "d.func(2);" << endl;
 		d.func(2);
-
+		cout << "d.func('char')" << endl;
+		d.func('c');
+		cout << "d.n" << d.n << endl;
+		Devive2 d2;
+		cout << "d2.func" << endl;
+		//d2.func(true);//不可访问
 		cout << endl;
 	}
 
@@ -967,20 +1061,29 @@ namespace C_Plus_Plus_Basic
 	void testPolymorphic_VirtualFunction_Assignment()
 	{
 		/*在C++中，对象可以被分配在静态数据区、栈空间或堆空间。被分配在静态数据区的对象在其定义时声明
-	为static，其在编译时刻被放入静态数据区。栈空间的对象是通过对象的显式声明分配的。堆中的对象则是通过new分配的。*/
+	为static，其在编译时刻被放入静态数据区。栈空间的对象是通过对象的显式声明分配的。堆中的对象则是通过new分配的。
+	堆中的对象必须通过delete释放*/
 
-		/* Allocated heap memory */
+	/* Allocated heap memory */
 		{
-			Undergraduate *s1 = new Undergraduate(1);
-			myStudent *s2 = new myStudent(2);
+			/*初始化对象，触发构造函数：先执行父类构造函数，再执行子类构造函数。*/
+			myStudent *s1 = new myStudent(2);
+			Undergraduate *s2 = new Undergraduate(1);
 			Pupil *s3 = new Pupil(3);
-			myStudent *pS = s1;
+			myStudent *pS = s2;
 			pS->study();
-			pS = s2;
+			pS = s1;
 			pS->study(1);
 			pS = s3;
 			pS->study();
 
+			s1->study();
+			s1->study(1);
+			s2->study();
+			s3->study();
+
+			/*堆中的对象必须通过delete释放。
+			删除指针，会触发析构函数；先析构子类，再析构父类。*/
 			delete s1;
 			delete s2;
 			delete s3;
@@ -988,27 +1091,27 @@ namespace C_Plus_Plus_Basic
 
 		/*Allocated on the stack.*/
 		{
-		Undergraduate s1(1);
-		myStudent s2(2);
-		Pupil s3(3);
-		int i = -1;
-		{
-			cout << "enter into brackets." << endl;
-			cout << "create new obj." << endl;
-			s1 = Undergraduate(4);
-			s2 = myStudent(5);
-			s3 = Pupil(6);
-			cout << "call virtual function." << endl;
-			myStudent *pS = &s1;
-			pS->study();
-			pS = &s2;
-			pS->study();
-			pS = &s3;
-			pS->study();
-		}
-		cout << "get out from brackets." << endl;
-		cout << endl;
-	}
+			myStudent s1(1);
+			Undergraduate s2(2);
+			Pupil s3(3);
+			int i = -1;
+			{
+				cout << "enter into brackets." << endl;
+				cout << "create new obj." << endl;
+				s1 = myStudent(4); //重新赋值，会触发析构函数：先析构子类，再析构父类。
+				s2 = Undergraduate(5);
+				s3 = Pupil(6);
+				cout << "call virtual function." << endl;
+				myStudent *pS = &s2;
+				pS->study();
+				pS = &s1;
+				pS->study();
+				pS = &s3;
+				pS->study();
+			}
+			cout << "get out from brackets." << endl;
+			cout << endl;
+		}//右大括号会触发栈内对象的析构函数；先析构子类，再析构父类。
 	}
 
 	void testAnd()
@@ -1016,6 +1119,9 @@ namespace C_Plus_Plus_Basic
 		int x = 55;
 		cout << "int x = " << x << endl;
 		int count = 0;
+		/*
+		x=0时跳出循环，x为负为正都会执行循环
+		*/
 		while (x)
 		{
 			x = x&(x - 1);
@@ -1074,7 +1180,7 @@ namespace C_Plus_Plus_Basic
 	}
 	/************************/
 
-	void b()
+	void Operator()
 	{
 		printf("1.Test malloc \n");
 		void *test_malloc;
@@ -1105,6 +1211,7 @@ namespace C_Plus_Plus_Basic
 		cout << space << "(++myInt3)=" << (++(*myInt3)).value << endl;
 		cout << space << "++(myInt3->value)=" << ++(myInt3->value) << endl;
 		cout << space << "myInt3.value=" << myInt3->value << endl;
+		//对象的指针可以移动，移动之后，运行时会尝试用类型来读取内存，虽然内存值已经不可控了。
 		cout << space << "myInt3+=33=" << (myInt3 += 33)->value << endl;
 		cout << space << "myInt3=" << myInt3 << endl;
 		cout << space << "myInt3.cA=" << myInt3->cA << endl;
@@ -1131,11 +1238,13 @@ namespace C_Plus_Plus_Basic
 		cout << space << "myInt4=" << myInt4 << " : ++myInt4->value=" << ++myInt4->value << endl;
 		cout << space << "myInt4=" << myInt4 << " : ++myInt4->value=" << ++myInt4->value << endl;
 		cout << space << "myInt4=" << myInt4 << endl;
+		//++myInt4->value会先取value的值，再对value的值++
 		cout << space << "++myInt4->value=" << ++myInt4->value << " : myInt4=" << myInt4 << endl;
 		cout << space << "++myInt4->value=" << ++myInt4->value << " : myInt4=" << myInt4 << endl;
 		cout << space << "++myInt4->value=" << ++myInt4->value << " : myInt4=" << myInt4 << endl;
 		cout << space << "++myInt4->value=" << ++myInt4->value << " : myInt4=" << myInt4 << endl;
 		cout << space << "myInt4=" << myInt4 << endl;
+		//myInt4++->value会先对myInt4指针++，再取value的值，value会取到不可控的值
 		cout << space << "myInt4=" << myInt4 << " : myInt4++->value=" << myInt4++->value << endl;
 		cout << space << "myInt4=" << myInt4 << " : myInt4++->value=" << myInt4++->value << endl;
 		cout << space << "myInt4=" << myInt4 << " : myInt4++->value=" << myInt4++->value << endl;
@@ -1193,6 +1302,25 @@ namespace C_Plus_Plus_Basic
 		cout << space << "funcB(2)=" << funcB(2) << endl;
 		func &funcC = methodA;
 		cout << space << "funcC(3)=" << funcC(3) << endl;
+
+		/*funD是方法的指针：方法指针的值就是目标的地址；
+		methodA是方法名称：方法名称是一个变量，它的值是自己的地址与“&方法名称”得到的值相同；*/
+		func *funcD = methodA;
+		cout << space << "funcD(4)=" << funcD(4) << endl;
+
+		func *funcE = funcC;
+		cout << space << "funcE(5)=" << funcE(5) << endl;
+
+		/*funcD,funcE,funcF的值都是目标地址。说明指针和引用内存分配策略是一样的。*/
+		func &funcF = funcC;
+		cout << space << "fundF(6)=" << funcF(6) << endl;
+
+		/*方法名称是一个特殊的变量，无论对他*或者&，之后付给指针或者别名，都能正确指向方法。*/
+		func* funcG = &methodA;
+		cout << space << "funcG(7)=" << funcG(7) << endl;
+
+		func* funcH = *methodA;
+		cout << space << "funcH(8)=" << funcH(8) << endl;
 		cout << endl;
 
 		printf("7.Test define\n");
@@ -1224,7 +1352,10 @@ namespace C_Plus_Plus_Basic
 		printf("15.Test multidimensional array \n");
 		testMultiDimensionalArray();
 
-		printf("last.Test cin \n");
+		printf("16.Test And &\n");
+		testAnd();
+
+		printf("17.last.Test cin \n");
 		cin >> b;
 		cout << "b=" << b << endl;
 		cout << endl;
@@ -1233,7 +1364,7 @@ namespace C_Plus_Plus_Basic
 
 	}
 
-	void a()
+	void Type()
 	{
 		printf("1.Test enum\n");
 		testEnum();
@@ -1253,39 +1384,86 @@ namespace C_Plus_Plus_Basic
 		printf("6.Test struct pointer\n");
 		testStructPointer();
 
-		printf("7.Test link list \n");
+		printf("7.Test class \n");
+		testClass();
+
+		printf("8.Test link list \n");
 		testLinkList();
 
-		printf("8.Test header file and using\n");
+		printf("9.Test header file and using\n");
 		testHeaderFile_Using();
 
-		printf("9.Test derive and using\n");
-		testDerive_Using();
-
-		printf("10.Test destructor\n");
+		printf("10.Test derive\n");
 		testDestructor();
 
-		printf("10.Test vector\n");
+		printf("11.Test derive and using\n");
+		testDerive_Using();
+
+		printf("12.Test vector\n");
 		testVector();
 
 		system("pause");
 	}
 
-	void c()
+	/*类和方法*/
+	void Class_Funtion()
 	{
 		printf("1.Test polymorphic and virtual function and assignment\n");
 		testPolymorphic_VirtualFunction_Assignment();
 
-		printf("2.Test &\n");
-		testAnd();
-
-		printf("3.Test sizeof\n");
+		printf("2.Test sizeof\n");
 		testReferenceAndPointer();
 
-		printf("4.Test Reference Parameter and Pointer Parameter");
+		printf("3.Test Reference Parameter and Pointer Parameter");
 		testRefParaAndPointerPara();
 
 		system("pause");
 	}
+
+	//new在堆上分配内存。非new在栈上分配内存。析构函数在大大括号结束时自动被调用。
+	void NewAndPoint()
+	{
+		class Node
+		{
+			int val;
+			Node* next;
+		};
+
+		class aaa
+		{
+			Node* a;
+			Node b;
+		public:
+			aaa()
+			{
+				a = new Node();
+				p = new char();
+			}
+			~aaa()
+			{
+				cout << "deconstructor" << endl;
+				//用完指针之后，一定要将其删掉。
+				delete a;
+				//删除指针之后，一定要加上下面这句话，免得成为野指针
+				a = NULL;
+
+				delete a;//正常
+				delete a;//正常
+
+				delete p;//正常
+				p = NULL;
+			} //析构函数
+			void disp()
+			{
+				cout << "disp" << endl;
+			}
+		private:
+			char *p;
+		};
+
+		aaa a;
+		a.~aaa();//显示调用析构函数（危险）
+		a.disp();
+	}//方法结束时，自动调用a的析构函数
 }
 
